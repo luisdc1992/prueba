@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
@@ -23,21 +24,43 @@ import com.springboot.app.models.entity.ItemPlanificacione;
 import com.springboot.app.models.entity.Planificacione;
 import com.springboot.app.models.entity.Producto;
 import com.springboot.app.models.entity.Usuario;
+import com.springboot.app.models.service.IPlanificacionService;
 import com.springboot.app.models.service.IUsuariosService;
 
 @Controller
 @RequestMapping("/planificacione")
 @SessionAttributes("planificacione")
 public class PlanificacionesController {
-	
+	 
 	@Autowired
 	private IUsuariosService usuarioService;
 	
+
+	
 	protected final Log logger = LogFactory.getLog(this.getClass());
+	
+	@GetMapping("/ver/{id}")
+	public String ver(@PathVariable(value="id") Long id, Model model, RedirectAttributes flash) {
+		Planificacione planificacione = usuarioService.findPlanificacioneById(id);
+		
+		if(planificacione==null) {
+			flash.addFlashAttribute("error", "La planificacion no existe en la BBDD");
+			return "redirect:/listaru";
+		}
+		
+		model.addAttribute("planificacione", planificacione);
+		model.addAttribute("titulo", "Planificacion : ".concat(planificacione.getDescripcion()));
+		
+		return "planificacione/ver";
+	}
+	 
+	
+
+	
 	
 	@GetMapping("formf/{usuarioId}")
 	public String crear(@PathVariable(value="usuarioId") Long usuarioId, Map<String, Object> model, RedirectAttributes flash) {
-		logger.info("Luis 1 ");
+		logger.info("Luis 1  ");
 		Usuario usuario = usuarioService.findOne(usuarioId);
 		
 		if(usuario == null) {
@@ -68,27 +91,32 @@ public class PlanificacionesController {
 			SessionStatus status) {
 		
 		logger.info("Luis 3");
-	
+		logger.info("Planificacione ID: " + planificacione.getId());
+	  // logger.info("Luis cantidad: " + cantidad.toString());
 		if (result.hasErrors()) {
-			model.addAttribute("titulo", "Crear Plani");
+			model.addAttribute("titulo", "Crear Planificacion");
 			return "planificacione/formf";
 		}
+		
 
 		if (itemId == null || itemId.length == 0) {
-			model.addAttribute("titulo", "Crear Plani2");
+			model.addAttribute("titulo", "Crear Planificacion");
 			model.addAttribute("error", "Error: La Planificacion NO puede no tener líneas!");
 			return "planificacione/formf";
 		}
 		
 		for(int i = 0; i < itemId.length; i++) {
-			//log.info("ID Luis: "+ itemId[i].toString() + ", cantidad: " +cantidad[i].toString());
+			logger.info("ID Luis: "+ itemId[i].toString() + ", cantidad: " +cantidad[i].toString());
 			Producto producto =  usuarioService.findProductoById(itemId[i]);
-			
+
 			ItemPlanificacione linea = new ItemPlanificacione();
 			linea.setCantidad(cantidad[i]);
 			linea.setProducto(producto);
+		//	linea.setCantidad(2);
 			planificacione.addItemPlanificacione(linea);
 			
+		
+		
 			//log.info("ID: "+ itemId[i].toString() + ", cantidad: " +cantidad[i].toString());
 			
 		}
@@ -97,8 +125,25 @@ public class PlanificacionesController {
 		
 		status.setComplete();
 		flash.addFlashAttribute("success", "Planificacion creada con exito");
-		return "redirect:/veru" + planificacione.getUsuario().getId();
+		return "redirect:/veru/" + planificacione.getUsuario().getId();
 	
 	}
+	
+	@GetMapping("/eliminarp/{id}")
+	public String eliminar(@PathVariable(value="id") Long id, RedirectAttributes flash) {
+		Planificacione planificacione = usuarioService.findPlanificacioneById(id);
+		
+	    if(planificacione != null) {
+	    	usuarioService.deletePlanificacion(id);
+	    	flash.addFlashAttribute("success", "Planificacion eliminada con exito");
+	    	return "redirect:/veru/" + planificacione.getUsuario().getId();
+	    }
+	    
+    	flash.addFlashAttribute("error", "La Planificacion no existe en la BBDD, no se puedo eliminar");
+    	return "redirect:/listaru"; 
+	    
+	}
+	
+	
 
 }

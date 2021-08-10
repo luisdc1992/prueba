@@ -21,4 +21,11 @@ public interface IUsuariosService {
 	public void savePlanificacione(Planificacione planificacione);
 	
 	public Producto findProductoById(Long id);
+	
+	public Planificacione findPlanificacioneById(Long id);
+	
+	public void deletePlanificacion(Long id);
+	
+	public List<Planificacione> findAll2();
+	
 }

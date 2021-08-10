@@ -66,12 +66,33 @@ public class UsuariosServiceImpl implements IUsuariosService{
 		// TODO Auto-generated method stub
 		planificacioneDao.save(planificacione);
 	}
-
+ 
 	@Override
 	@Transactional(readOnly = true)		
 	public Producto findProductoById(Long id) {
 		// TODO Auto-generated method stub
 		return productoDao.findById(id).orElse(null);
+	}
+
+	@Override
+	@Transactional(readOnly = true)	
+	public Planificacione findPlanificacioneById(Long id) {
+		// TODO Auto-generated method stub
+		return planificacioneDao.findById(id).orElse(null);
+	}
+
+	@Override
+	@Transactional
+	public void deletePlanificacion(Long id) {
+		planificacioneDao.deleteById(id);
+		
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<Planificacione> findAll2() {
+		// TODO Auto-generated method stub
+		return (List<Planificacione>) planificacioneDao.findAll();
 	}
 	
 	

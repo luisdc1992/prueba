@@ -48,6 +48,7 @@ public class ProductosController {
 	
 	@RequestMapping(value="/listarp", method=RequestMethod.GET)
 	public String listarp(Model model) {
+		
 		model.addAttribute("titulo", "Listado de Materiales");
 		model.addAttribute("productos", productosService.findAll());
 		return "listarp";

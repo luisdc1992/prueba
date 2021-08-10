@@ -15,7 +15,7 @@
 			    <a class="btn btn-light btn-xs" th:href="@{'/veru/' + ${planificacione.usuario.id}}" th:text="'&laquo; volver'"></a>
 			    </h4>
 
-				<form th:action="@{/planificacione/formf/}" th:object="${planificacione}" method="post">
+				<form name="formFactura" th:action="@{/planificacione/formf/}" th:object="${planificacione}" method="post">
 
 					<div class="form-group row">
 						<label class="col-sm-2 col-form-label" th:text="'Usuario'"></label>
